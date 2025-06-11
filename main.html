@@ -4,25 +4,91 @@
   <meta charset="utf-8">
   <title>For Study フォア・スタディー（福江プリント集）</title>
   <style>
+    @font-face {
+      font-family: 'MPlus1-Ebold'; 
+      src: url('https://r52-jp.github.io/WORDS/Fonts/MPLUS1-ExtraBold.ttf') format('truetype');
+    }
+
     h1 {
+        font-weight: normal;
         border-bottom: double 5px #FFC778;
+        line-height: 1.5;
+        font-family: "MPlus1-Ebold";
     }
-    a {
+    .amount {
         line-height: 0.5;
-        font-family: "Hiragino Maru Gothic ProN W4";
+        font-family: "MPlus1-Ebold";
     }
-    h3 {
-        line-height: 0.5;
-        font-family: "Hiragino Maru Gothic ProN W4";
+    .underline {
+      border-bottom: solid
     }
-    h4 {
-        line-height: 0.5;
-        font-family: "Hiragino Maru Gothic ProN W4";
+    p {
+      font-family: "MPlus1-Ebold";
+      text-align: center;
+      font-size:50px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      opacity: 0;
+    }
+    .slider {
+      -webkit-appearance: none;/* CSS適用のおまじない */
+      appearance: none;/* CSS適用のおまじない */
+      background: lightgreen;/* バーの色 */
+      width: 90%;
+    }
+    select {
+      font-family: "MPlus1-Ebold";
+      font-size:20px;
+    }
+    .put_ans {
+      width: 100px;
+      font-family: "MPlus1-Ebold";
+      font-size:20px;
+    }
+    .ans {
+      font-family: "MPlus1-Ebold";
+      font-size:20px;
+      text-align: center;
+    }
+    button {
+      font-family: "MPlus1-Ebold";
+      font-size:20px;
     }
   </style>
 </head>
 <body>
-  <script></script>
-  <h1>For Study フォア・スタディー（福江プリント集）</h1>
+  <h1>【世界史】基本年代テスト！</h1>
+  <input type="range" min="0" max="2" step="1" disabled class="slider"><a class="amount" id="amount">1/2</a>
+  <p>周の東遷</p>
+  <p class="underline"></p>
+  <div class="ans">
+    <select name="AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
+    <input class="put_ans" type="number"></input>
+    <a>年　</a><button>回答</button>
+  </div>
+  <script>
+    let slider = document.querySelector('.slider'); // input 要素を取得
+    /*【関数】バーの色を現在値に合わせる */
+    function setSeekbar(elm) {
+      // 値の取得
+      let now = parseFloat(elm.value);// 現在値
+      let max = parseFloat(elm.getAttribute('max'));// 最大値
+      let min = parseFloat(elm.getAttribute('min'));// 最小値
+
+      // 現在値がバーではどの位置［％］なのかを計算
+      let percent = (now - min) / (max - min) * 100;
+
+      // 算出した位置［％］を linear-gradient に適用
+      elm.style.background = `linear-gradient(to right, orange ${percent}%, lightgray ${percent}%)`; 
+    }
+
+    /* 初期値に合わせてバーの色を変える */
+    setSeekbar(slider);
+
+    /*【イベント】現在値が変わったらバーの色を変える */
+    slider.addEventListener('input', function() {
+      setSeekbar(this);
+    });
+  </script>
 </body>
 </html>
