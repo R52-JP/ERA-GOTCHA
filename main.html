@@ -149,6 +149,7 @@
 
       document.getElementById("AD/BC").removeAttribute("disabled"); // 紀元前/紀元後リストを選択可能に.
       document.getElementById("put_ans").removeAttribute("disabled"); // 年代の回答欄を選択可能に.
+      document.getElementById("slider_div").innerHTML = `<input type="range" min="0" max="` + String(data.length) + `" step="1" value="0" class="slider" disabled>`
     };
     
     // 次の問題を表示する関数(「次へ」ボタンのonclickイベント).
@@ -186,7 +187,7 @@
       document.getElementById("ans_viewer").innerHTML = "";
 
       // 進捗バーを更新.
-      document.getElementById("slider_div").innerHTML = `<input type="range" min="0" max="2" step="1" value="` + String(now_num+1) + `" class="slider" disabled>`
+      document.getElementById("slider_div").innerHTML = `<input type="range" min="0" max="` + String(data.length) + `" step="1" value="` + String(now_num+1) + `" class="slider" disabled>`
       setSeekbar();
       
     }
