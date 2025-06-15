@@ -241,7 +241,7 @@
     // 解答を表示する関数.
     function view_ans() {
       let real_answer_HTML = `<p class="real_ans"><mark>【` + data[now_num][0] + "】：" + data[now_num][1] + "年</mark></p><br>" // ex.<a>バビロン捕囚の開始：前586年</a><br>
-      let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][2].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>") + "</p>"
+      let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][2].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>").split("|").join("<br><br>") + "</p>"
       document.getElementById("ans_viewer").innerHTML = real_answer_HTML + goro_HTML;
     };
 
