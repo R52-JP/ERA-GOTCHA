@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>【世界史】基本年代テスト</title>
+  <style>
+    @font-face {
+      font-family: 'MPlus1-Ebold'; 
+      src: url('https://r52-jp.github.io/WORDS/Fonts/MPLUS1-ExtraBold.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'MPlus1-Regular'; 
+      src: url('https://r52-jp.github.io/WORDS/Fonts/MPLUS1-Regular.ttf') format('truetype');
+    }
+    h1 {
+        font-weight: normal;
+        border-bottom: double 5px #FFC778;
+        line-height: 1.5;
+        font-family: "MPlus1-Ebold";
+    }
+  </style>
+</head>
+<body>
+  <h1>【世界史】基本年代テスト！</h1>
+  <div id="main_list"></div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script language="javascript" type="text/javascript">
+    let data; // (A).
+    url = "https://r52-jp.github.io/ERA-GOTCHA/data.txt";
+    $.get(url, (data_) => {
+      data = data_ // (A)に値を代入.
+    });
+
+    // 初期化・・・「dataの値の整理(リスト化など)」「回答欄を選択可能にする」.
+    function init() {
+      // 改行コードでdata(文字列)を分割→data(リスト).
+      data = data.split("\n");
+      // dataの要素のうち，値が「""」であるものを削除.
+      for (let i=0; i<data.length; i++) {
+        if (data[i] == "") {
+          data.splice(i, i);
+        };
+      };
+      // ":"でdataの各要素を分割.
+      for (let i=0; i<data.length; i++) {
+        data[i] = data[i].split(":");
+      };
+    };
+  
+  </script>
+</body>
+</html>
