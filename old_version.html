@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>【世界史】基本年代テスト（世紀）</title>
+  <title>【世界史】基本年代テスト</title>
   <style>
     @font-face {
       font-family: 'MPlus1-Ebold'; 
@@ -83,14 +83,14 @@
   </style>
 </head>
 <body>
-  <h1>【世界史】基本年代テスト！（世紀）</h1>
+  <h1>【世界史】基本年代テスト！</h1>
   <div id="slider_div"><input type="range" min="0" max="2" step="1" value="0" class="slider" disabled></div>
   <p id="problem">[次へ]を押して開始</p>
   <p class="underline"></p><br>
   <div class="ans">
     <select name="AD/BC" id="AD/BC" disabled><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
     <input class="put_ans" id="put_ans" type="number" disabled></input>
-    <a>世紀　</a><button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>
+    <a>年　</a><button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>
   </div>
   <br>
   <p id="T/F" class="TorF">　</p>
@@ -99,7 +99,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
   <script language="javascript" type="text/javascript">
     let data; // (A).
-    url = "https://r52-jp.github.io/ERA-GOTCHA/data_century.txt";
+    url = "https://r52-jp.github.io/ERA-GOTCHA/data.txt";
     $.get(url, (data_) => {
       data = data_ // (A)に値を代入.
     });

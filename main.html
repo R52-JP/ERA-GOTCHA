@@ -87,10 +87,18 @@
   <div id="slider_div"><input type="range" min="0" max="2" step="1" value="0" class="slider" disabled></div>
   <p id="problem">[次へ]を押して開始</p>
   <p class="underline"></p><br>
-  <div class="ans">
-    <select name="AD/BC" id="AD/BC" disabled><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
-    <input class="put_ans" id="put_ans" type="number" disabled></input>
-    <a>年　</a><button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>
+  <div class="ans" id="ans">
+    <select name="exam_mode" id="exam_mode">
+      <option value="year_mode">年号のみ出題</option>
+      <option value="century_mode">世紀のみ出題</option>
+      <option value="all_mode">年号・世紀から出題</option>
+    </select>　
+    <select name="number_mode" id="number_mode">
+      <option value="mode15">15問ランダムに出題</option>
+      <option value="mode50">50問ランダムに出題</option>
+      <option value="all_mode">すべて出題</option>
+    </select>　
+    <button id="next">次へ</button>
   </div>
   <br>
   <p id="T/F" class="TorF">　</p>
@@ -99,9 +107,14 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
   <script language="javascript" type="text/javascript">
     let data; // (A).
-    url = "https://r52-jp.github.io/ERA-GOTCHA/data.txt";
+    let century_data;
+    let url = "https://r52-jp.github.io/ERA-GOTCHA/data.txt";
     $.get(url, (data_) => {
       data = data_ // (A)に値を代入.
+    });
+    url = "https://r52-jp.github.io/ERA-GOTCHA/data_century.txt";
+    $.get(url, (data__) => {
+      century_data = data__ // (A)に値を代入.
     });
 
     /*【関数】バーの色を現在値に合わせる */
@@ -146,10 +159,37 @@
       for (let i=0; i<data.length; i++) {
         data[i] = data[i].split(":");
       };
+
+      // 改行コードでcentury_data(文字列)を分割→century_data(リスト).
+      century_data = century_data.split("\n");
+      // dcentury_dataの要素のうち，値が「""」であるものを削除.
+      for (let i=0; i<century_data.length; i++) {
+        if (century_data[i] == "") {
+          century_data.splice(i, i);
+        };
+      };
+      // ":"でcentury_dataの各要素を分割.
+      for (let i=0; i<century_data.length; i++) {
+        century_data[i] = century_data[i].split(":");
+      };
+
+      // exam_modeごとにdataを設定.
+      let exam_mode_value = document.getElementById("exam_mode").value
+      if (exam_mode_value == "century_mode") {
+        data = century_data
+      } else if (exam_mode_value == "all_mode") {
+        data.concat(century_data)
+      }
+
       data = shuffle(data)
 
-      document.getElementById("AD/BC").removeAttribute("disabled"); // 紀元前/紀元後リストを選択可能に.
-      document.getElementById("put_ans").removeAttribute("disabled"); // 年代の回答欄を選択可能に.
+      // number_modeごとにdataを設定.
+      let number_mode_value = document.getElementById("number_mode").value
+      if (number_mode_value == "mode15") {
+        data = data.slice(0, 15);
+      } else if (number_mode_value == "mode50") {
+        data = data.slice(0, 50);
+      }
       document.getElementById("slider_div").innerHTML = `<input type="range" min="0" max="` + String(data.length) + `" step="1" value="0" class="slider" disabled>`
     };
     
@@ -160,6 +200,12 @@
       };
       // 年代テストが終わった時の処理.
       if (now_num == data.length - 1) {
+        let base_elements =
+          `<select name="AD/BC" id="AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
+          <input class="put_ans" id="put_ans" type="number"></input>
+          <a>年　</a><button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>`
+        // 割り当てる.
+        document.getElementById("ans").innerHTML = base_elements
         document.getElementById("T/F").innerText = "終了！";
         document.getElementById("T/F").style.color = "#99CC33";
         document.getElementById("next").setAttribute("disabled", true); // 「次へ」ボタンを選択不可能に.
@@ -175,78 +221,211 @@
             <a class="goro">を押してください。</a>
             <p class="real_ans">点数：` + String(point) + "/" + String(data.length) + "</p>";
         return "finish";
-      }
-      document.getElementById("check").removeAttribute("disabled"); // 「回答」ボタンを選択可能に.
-      document.getElementById("next").setAttribute("disabled", true); // 「次へ」ボタンを選択不可能に.
+      };
       now_num = now_num + 1;
       console.log(data[now_num]);
-      problem_label.innerText = data[now_num][0] // 「問題」を表示.
-      // 一通りリセットする.
-      document.getElementById("AD/BC").value = "AD";
-      document.getElementById("put_ans").value = "";
+      document.getElementById("ans").innerHTML = ""
+      if (data[now_num][0] != "1" && data[now_num][0] != "2" && data[now_num][0] != "3") {
+        let base_elements =
+          `<select name="AD/BC" id="AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
+          <input class="put_ans" id="put_ans" type="number"></input>
+          <a>年　</a><button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>`
+        // 割り当てる.
+        document.getElementById("ans").innerHTML = base_elements
+        problem_label.innerText = data[now_num][0] // 「問題」を表示.
+      } else {
+        if (data[now_num][0] == "1") {
+          let base_elements =
+            `<select name="AD/BC" id="AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
+            <input class="put_ans" id="put_ans" type="number"></input>
+            <a>世紀　</a><button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>`
+          // 割り当てる.
+          document.getElementById("ans").innerHTML = base_elements
+          problem_label.innerText = data[now_num][1]; // 「問題」を表示.
+        } else if (data[now_num][0] == "2") {
+          let base_elements =
+            `<select name="AD/BC" id="1AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
+            <input class="put_ans" id="put_ans1" type="number"></input>
+            <a>世紀～</a>
+            <select name="AD/BC" id="2AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
+            <input class="put_ans" id="put_ans2" type="number"></input>
+            <a>世紀　</a>
+            <button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>`
+          // 割り当てる.
+          document.getElementById("ans").innerHTML = base_elements
+          problem_label.innerText = data[now_num][1] // 「問題」を表示.
+        } else if (data[now_num][0] == "3") {
+          let base_elements =
+            `<select name="AD/BC" id="1AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
+            <input class="put_ans" id="put_ans1" type="number"></input>
+            <a>世紀</a>
+            <select id="1s/e"><option value="前">前半</option><option value="後">後半</option></select>
+            <a>～</a>
+            <select name="AD/BC" id="2AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
+            <input class="put_ans" id="put_ans2" type="number"></input>
+            <a>世紀</a>
+            <select id="2s/e"><option value="前">前半</option><option value="後">後半</option></select>
+            <a>　</a>
+            <button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>`
+          // 割り当てる.
+          document.getElementById("ans").innerHTML = base_elements
+          problem_label.innerText = data[now_num][1] // 「問題」を表示.
+        };
+      };
+      document.getElementById("next").setAttribute("onclick", "view_next()");
+      document.getElementById("check").setAttribute("onclick", "check_answer()");
+      document.getElementById("check").removeAttribute("disabled"); // 「回答」ボタンを選択可能に.
+      document.getElementById("next").setAttribute("disabled", true); // 「次へ」ボタンを選択不可能に.
       document.getElementById("T/F").innerText = "　";
       document.getElementById("ans_viewer").innerHTML = "";
-
       // 進捗バーを更新.
       document.getElementById("slider_div").innerHTML = `<input type="range" min="0" max="` + String(data.length) + `" step="1" value="` + String(now_num+1) + `" class="slider" disabled>`
       setSeekbar();
       
     }
 
+    function results(T_F) {
+      let TorF = document.getElementById("T/F");
+      if (T_F == "正解") {
+        TorF.innerText = "正解！";
+        TorF.style.color = "red";
+        point = point + 1;
+      } else {
+        TorF.innerText = "不正解...";
+        TorF.style.color = "blue";
+      }
+      view_ans();
+    }
+
     // 回答を確認する関数.
     function check_answer() {
-      // 要素を取得.
-      let TorF = document.getElementById("T/F");
-      let ans_value = document.getElementById("put_ans");
-      // 回答欄が空欄の場合，alertする.
-      if (ans_value.value == "") {
-        alert("回答を入力してください");
-        return;
-      };
+      if (data[now_num][0] != "1" && data[now_num][0] != "2" && data[now_num][0] != "3") {
+        // 要素を取得.
+        let ans_value = document.getElementById("put_ans");
+        // 回答欄が空欄の場合，alertする.
+        if (ans_value.value == "") {
+          alert("回答を入力してください");
+          return;
+        };
+        if (data[now_num][1].indexOf('前') > -1) { 
+          // 紀元前の場合.
+          if ( (document.getElementById("AD/BC").value == "BC")&&(ans_value.value == data[now_num][1].substr(1)) ) {
+            results("正解")
+          } else {
+            results("不正解")
+          }
+        } else {
+          // 紀元後の場合.
+          if ( (document.getElementById("AD/BC").value == "AD")&&(ans_value.value == data[now_num][1]) ) {
+            results("正解")
+          } else {
+            results("不正解")
+          }
+        };
+      } else if (data[now_num][0] == "1") {
+        // 要素を取得.
+        let ans_value = document.getElementById("put_ans");
+        // 回答欄が空欄の場合，alertする.
+        if (ans_value.value == "") {
+          alert("回答を入力してください");
+          return;
+        };
+        if (data[now_num][2].indexOf('前') > -1) { 
+          // 紀元前の場合.
+          if ( (document.getElementById("AD/BC").value == "BC")&&(ans_value.value == data[now_num][2].substr(1)) ) {
+            results("正解")
+          } else {
+            results("不正解")
+          }
+        } else {
+          // 紀元後の場合.
+          if ( (document.getElementById("AD/BC").value == "AD")&&(ans_value.value == data[now_num][2]) ) {
+            results("正解")
+          } else {
+            results("不正解")
+          }
+        };
+      } else if (data[now_num][0] == "2") {
+        // 要素を取得.
+        let ans_value1 = document.getElementById("put_ans1");
+        let ans_value2 = document.getElementById("put_ans2");
+        // 回答欄が空欄の場合，alertする.
+        if (ans_value1.value == "" || ans_value2.value == "") {
+          alert("回答を入力してください");
+          return;
+        };
+        if ( (document.getElementById("1AD/BC").value == "AD")&&(document.getElementById("2AD/BC").value == "AD")&&(ans_value1.value == data[now_num][2])&&(ans_value2.value == data[now_num][3]) ) {
+          results("正解")
+        } else {
+          results("不正解")
+        }
+      } else if (data[now_num][0] == "3") {
+        // 要素を取得.
+        let ans_value1 = document.getElementById("put_ans1");
+        let ans_value2 = document.getElementById("put_ans2");
+        // 回答欄が空欄の場合，alertする.
+        if (ans_value1.value == "" || ans_value2.value == "") {
+          alert("回答を入力してください");
+          return;
+        };
+        if ( (document.getElementById("1AD/BC").value == "AD")&&(document.getElementById("2AD/BC").value == "AD")&&(ans_value1.value == data[now_num][2])&&(ans_value2.value == data[now_num][4])&&(document.getElementById("1s/e").value == data[now_num][3])&&(document.getElementById("2s/e").value == data[now_num][5]) ) {
+          results("正解")
+        } else {
+          results("不正解")
+        }
+      }
       // 「次へ」ボタンを選択可能に, 「回答」ボタンを選択不可能にする.
       document.getElementById("next").removeAttribute("disabled");
       document.getElementById("check").setAttribute("disabled", true);
-
-      if (data[now_num][1].indexOf('前') > -1) { 
-        // 紀元前の場合.
-        if ( (document.getElementById("AD/BC").value == "BC")&&(ans_value.value == data[now_num][1].substr(1)) ) {
-          console.log("正解です！")
-          TorF.innerText = "正解！";
-          TorF.style.color = "red";
-          point = point + 1;
-          view_ans();
-        } else {
-          console.log("不正解です！")
-          TorF.innerText = "不正解...";
-          TorF.style.color = "blue";
-          view_ans();
-        }
-      } else {
-        // 紀元後の場合.
-        if ( (document.getElementById("AD/BC").value == "AD")&&(ans_value.value == data[now_num][1]) ) {
-          console.log("正解です！")
-          TorF.innerText = "正解！";
-          TorF.style.color = "red";
-          point = point + 1;
-          view_ans();
-        } else {
-          console.log("不正解です！");
-          TorF.innerText = "不正解...";
-          TorF.style.color = "blue";
-          view_ans();
-        }
-      };
     };
 
     // 解答を表示する関数.
     function view_ans() {
-      let real_answer_HTML = `<p class="real_ans"><mark>【` + data[now_num][0] + "】：" + data[now_num][1] + "年</mark></p><br>" // ex.<a>バビロン捕囚の開始：前586年</a><br>
-      let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][2].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>").split("|").join("<br>") + "</p>"
-      document.getElementById("ans_viewer").innerHTML = real_answer_HTML + goro_HTML;
+      if (data[now_num][0] != "1" && data[now_num][0] != "2" && data[now_num][0] != "3") {
+        let real_answer_HTML = `<p class="real_ans"><mark>【` + data[now_num][0] + "】：" + data[now_num][1] + "年</mark></p><br>" // ex.<a>バビロン捕囚の開始：前586年</a><br>
+        let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][2].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>").split("|").join("<br>") + "</p>"
+        document.getElementById("ans_viewer").innerHTML = real_answer_HTML + goro_HTML;
+      } else if (data[now_num][0] == "1") {
+        let real_answer_HTML = `<p class="real_ans"><mark>【` + data[now_num][1] + "】：" + data[now_num][2] + "世紀</mark></p><br>" // ex.<a>バビロン捕囚の開始：前586年</a><br>
+        let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][3].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>").split("|").join("<br>") + "</p>"
+        document.getElementById("ans_viewer").innerHTML = real_answer_HTML + goro_HTML;
+      } else if (data[now_num][0] == "2") {
+        let real_answer_HTML = `<p class="real_ans"><mark>【` + data[now_num][1] + "】：" + data[now_num][2] + "世紀～" + data[now_num][3] + "世紀</mark></p><br>" // ex.<a>バビロン捕囚の開始：前586年</a><br>
+        let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][4].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>").split("|").join("<br>") + "</p>"
+        document.getElementById("ans_viewer").innerHTML = real_answer_HTML + goro_HTML;
+      }else if (data[now_num][0] == "3") {
+        let real_answer_HTML = `<p class="real_ans"><mark>【` + data[now_num][1] + "】：" + data[now_num][2] + "世紀" + data[now_num][3] + "半～" + data[now_num][4] + "世紀" + data[now_num][5] + "半" + "</mark></p><br>" // ex.<a>バビロン捕囚の開始：前586年</a><br>
+        let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][6].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>").split("|").join("<br>") + "</p>"
+        document.getElementById("ans_viewer").innerHTML = real_answer_HTML + goro_HTML;
+      }
     };
 
+    function ModeSelectListener() {
+      let exam_mode_value = document.getElementById("exam_mode").value
+      document.getElementById("number_mode").innerHTML = "";
+      if (exam_mode_value == "century_mode") {
+        let all_op = document.createElement("option");
+          all_op.text = "すべて出題";
+          all_op.value = "all_mode";
+        document.getElementById("number_mode").appendChild(all_op)
+      } else {
+        let mode15_op = document.createElement("option");
+          mode15_op.text = "15問ランダムに出題";
+          mode15_op.value = "mode15";
+        let mode50_op = document.createElement("option");
+          mode50_op.text = "50問ランダムに出題";
+          mode50_op.value = "mode50";
+        let all_op = document.createElement("option");
+          all_op.text = "すべて出題";
+          all_op.value = "all_mode";
+        document.getElementById("number_mode").appendChild(mode15_op)
+        document.getElementById("number_mode").appendChild(mode50_op)
+        document.getElementById("number_mode").appendChild(all_op)
+      }
+    }
+
     document.getElementById("next").setAttribute("onclick", "view_next()");
-    document.getElementById("check").setAttribute("onclick", "check_answer()");
+    document.getElementById("exam_mode").setAttribute("onchange", "ModeSelectListener()");
   </script>
 </body>
 </html>
