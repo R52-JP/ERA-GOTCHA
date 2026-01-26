@@ -387,7 +387,7 @@
 
     // 解答を表示する関数.
     function view_ans() {
-      if (data[now_num][0] != "1" && data[now_num][0] != "2" && data[now_num][0] != "3") {
+      if (data[now_num][0] != "1" && data[now_num][0] != "2" && data[now_num][0] != "3" && data[now_num][0] != "4") {
         let real_answer_HTML = `<p class="real_ans"><mark>【` + data[now_num][0] + "】：" + data[now_num][1] + "年</mark></p><br>" // ex.<a>バビロン捕囚の開始：前586年</a><br>
         let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][2].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>").split("|").join("<br>") + "</p>"
         document.getElementById("ans_viewer").innerHTML = real_answer_HTML + goro_HTML;
