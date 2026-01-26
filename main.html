@@ -225,7 +225,7 @@
       now_num = now_num + 1;
       console.log(data[now_num]);
       document.getElementById("ans").innerHTML = ""
-      if (data[now_num][0] != "1" && data[now_num][0] != "2" && data[now_num][0] != "3") {
+      if (data[now_num][0] != "1" && data[now_num][0] != "2" && data[now_num][0] != "3" && data[now_num][0] != "4") {
         let base_elements =
           `<select name="AD/BC" id="AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
           <input class="put_ans" id="put_ans" type="number"></input>
@@ -244,10 +244,8 @@
           problem_label.innerText = data[now_num][1]; // 「問題」を表示.
         } else if (data[now_num][0] == "2") {
           let base_elements =
-            `<select name="AD/BC" id="1AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
-            <input class="put_ans" id="put_ans1" type="number"></input>
+            `<input class="put_ans" id="put_ans1" type="number"></input>
             <a>世紀～</a>
-            <select name="AD/BC" id="2AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
             <input class="put_ans" id="put_ans2" type="number"></input>
             <a>世紀　</a>
             <button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>`
@@ -256,16 +254,24 @@
           problem_label.innerText = data[now_num][1] // 「問題」を表示.
         } else if (data[now_num][0] == "3") {
           let base_elements =
-            `<select name="AD/BC" id="1AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
-            <input class="put_ans" id="put_ans1" type="number"></input>
+            `<input class="put_ans" id="put_ans1" type="number"></input>
             <a>世紀</a>
             <select id="1s/e"><option value="前">前半</option><option value="後">後半</option></select>
             <a>～</a>
-            <select name="AD/BC" id="2AD/BC"><option value="AD">紀元後</option><option value="BC">紀元前</option></select>
             <input class="put_ans" id="put_ans2" type="number"></input>
             <a>世紀</a>
             <select id="2s/e"><option value="前">前半</option><option value="後">後半</option></select>
             <a>　</a>
+            <button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>`
+          // 割り当てる.
+          document.getElementById("ans").innerHTML = base_elements
+          problem_label.innerText = data[now_num][1] // 「問題」を表示.
+        } else if (data[now_num][0] == "4") {
+          let base_elements =
+            `<input class="put_ans" id="put_ans1" type="number"></input>
+            <a>世紀中ごろ～</a>
+            <input class="put_ans" id="put_ans2" type="number"></input>
+            <a>世紀中ごろ　</a>
             <button id="check" disabled>回答</button><a>　</a><button id="next">次へ</button>`
           // 割り当てる.
           document.getElementById("ans").innerHTML = base_elements
@@ -299,7 +305,7 @@
 
     // 回答を確認する関数.
     function check_answer() {
-      if (data[now_num][0] != "1" && data[now_num][0] != "2" && data[now_num][0] != "3") {
+      if (data[now_num][0] != "1" && data[now_num][0] != "2" && data[now_num][0] != "3" && data[now_num][0] != "4") {
         // 要素を取得.
         let ans_value = document.getElementById("put_ans");
         // 回答欄が空欄の場合，alertする.
@@ -345,7 +351,7 @@
             results("不正解")
           }
         };
-      } else if (data[now_num][0] == "2") {
+      } else if (data[now_num][0] == "2" || data[now_num][0] == "4") {
         // 要素を取得.
         let ans_value1 = document.getElementById("put_ans1");
         let ans_value2 = document.getElementById("put_ans2");
@@ -354,7 +360,7 @@
           alert("回答を入力してください");
           return;
         };
-        if ( (document.getElementById("1AD/BC").value == "AD")&&(document.getElementById("2AD/BC").value == "AD")&&(ans_value1.value == data[now_num][2])&&(ans_value2.value == data[now_num][3]) ) {
+        if ( (ans_value1.value == data[now_num][2])&&(ans_value2.value == data[now_num][3]) ) {
           results("正解")
         } else {
           results("不正解")
@@ -368,7 +374,7 @@
           alert("回答を入力してください");
           return;
         };
-        if ( (document.getElementById("1AD/BC").value == "AD")&&(document.getElementById("2AD/BC").value == "AD")&&(ans_value1.value == data[now_num][2])&&(ans_value2.value == data[now_num][4])&&(document.getElementById("1s/e").value == data[now_num][3])&&(document.getElementById("2s/e").value == data[now_num][5]) ) {
+        if ( (ans_value1.value == data[now_num][2])&&(ans_value2.value == data[now_num][4])&&(document.getElementById("1s/e").value == data[now_num][3])&&(document.getElementById("2s/e").value == data[now_num][5]) ) {
           results("正解")
         } else {
           results("不正解")
@@ -393,9 +399,13 @@
         let real_answer_HTML = `<p class="real_ans"><mark>【` + data[now_num][1] + "】：" + data[now_num][2] + "世紀～" + data[now_num][3] + "世紀</mark></p><br>" // ex.<a>バビロン捕囚の開始：前586年</a><br>
         let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][4].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>").split("|").join("<br>") + "</p>"
         document.getElementById("ans_viewer").innerHTML = real_answer_HTML + goro_HTML;
-      }else if (data[now_num][0] == "3") {
+      } else if (data[now_num][0] == "3") {
         let real_answer_HTML = `<p class="real_ans"><mark>【` + data[now_num][1] + "】：" + data[now_num][2] + "世紀" + data[now_num][3] + "半～" + data[now_num][4] + "世紀" + data[now_num][5] + "半" + "</mark></p><br>" // ex.<a>バビロン捕囚の開始：前586年</a><br>
         let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][6].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>").split("|").join("<br>") + "</p>"
+        document.getElementById("ans_viewer").innerHTML = real_answer_HTML + goro_HTML;
+      } else if (data[now_num][0] == "4") {
+        let real_answer_HTML = `<p class="real_ans"><mark>【` + data[now_num][1] + "】：" + data[now_num][2] + "世紀中ごろ～" + data[now_num][3] + "世紀中ごろ</mark></p><br>" // ex.<a>バビロン捕囚の開始：前586年</a><br>
+        let goro_HTML = `<p class="goro">語呂合わせ：` + data[now_num][4].split("{").join("<ruby>").split("}").join("</ruby>").split("[").join("<rt>").split("]").join("</rt>").split("|").join("<br>") + "</p>"
         document.getElementById("ans_viewer").innerHTML = real_answer_HTML + goro_HTML;
       }
     };
