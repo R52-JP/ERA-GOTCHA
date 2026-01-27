@@ -178,7 +178,7 @@
       if (exam_mode_value == "century_mode") {
         data = century_data
       } else if (exam_mode_value == "all_mode") {
-        data.concat(century_data)
+        data = data.concat(century_data)
       }
 
       data = shuffle(data)
